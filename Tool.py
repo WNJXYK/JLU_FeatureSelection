@@ -1,10 +1,12 @@
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import KFold, train_test_split
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import scale
 from sklearn.metrics import accuracy_score
 import pandas as pd
 import numpy as np
+
 
 def load_data(filepath):
     # Read File
@@ -17,7 +19,7 @@ def load_data(filepath):
     return X, y, (n_samples, n_features, n_classes)
 
 def get_acc(X, y, esti='5nn', nofold=True):
-    kf = KFold(n_splits=2 if nofold else 10)
+    kf = KFold(n_splits=2 if nofold else 10, random_state=19260817)
     acc = []
 
     for train_index, test_index in kf.split(X):
@@ -30,14 +32,37 @@ def get_acc(X, y, esti='5nn', nofold=True):
         model = KNeighborsClassifier()
         if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]))
         if esti == 'svm': model = SVC(kernel="rbf", gamma='auto')
+        if esti == 'cart': model = DecisionTreeClassifier()
         model.fit(train_X, train_y.ravel())
         acc.append(accuracy_score(model.predict(test_X), test_y))
 
     return np.mean(acc)
 
 def test(func):
-    files = ["arcene", "LVST", "cleveland", "ionosphere", "vehicle"]
+    files = ["cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct", "arcene"]
 
     for name in files:
-        path = "dataset/" + files + ".csv"
-        func
+        print("Dataset {0}".format(name))
+
+        path = "dataset/" + name + ".csv"
+        X, y, (_, n_features, _) = load_data(path)
+
+        weight = func(path)
+        idx = []
+        for i in range(n_features):
+            if weight[i] > 0.9: idx.append(i)
+
+        A1 = get_acc(X[:, idx], y, "5nn", False)
+        A2 = get_acc(X[:, idx], y, "svm", False)
+        A3 = get_acc(X[:, idx], y, "cart", False)
+        B1 = get_acc(X[:, idx], y, "5nn", True)
+        B2 = get_acc(X[:, idx], y, "svm", True)
+        B3 = get_acc(X[:, idx], y, "cart", True)
+
+
+        print(" * 5nn & 10-fold {0}".format(A1))
+        print(" * SVM & 10-fold {0}".format(A2))
+        print(" * Cart & 10-fold {0}".format(A3))
+        print(" * 5nn & 70%-30% {0}".format(B1))
+        print(" * SVM & 70%-30% {0}".format(B2))
+        print(" * Cart & 70%-30% {0}".format(B3))
