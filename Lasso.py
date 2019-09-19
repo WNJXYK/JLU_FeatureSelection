@@ -9,10 +9,11 @@ def Lasso(filepath):
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
 
     # Train
-    pbar = tqdm(range(1))
+    weight = np.ones(n_features)
+    pbar = tqdm(range(100))
     for epoch in pbar:
         logitModel = LogisticRegression(solver="saga", multi_class="multinomial", max_iter=10000, penalty="l1")
-        logitModel.fit(X, y.ravel())
+        logitModel.fit(X * weight, y.ravel())
 
         # Calc Weight
         cnt, weight = 0, []

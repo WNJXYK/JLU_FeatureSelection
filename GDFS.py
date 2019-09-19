@@ -46,7 +46,7 @@ def GDFS(filepath):
             # Logistic Regression
             X_trans = X * weight_val
             X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.3, random_state=19260817)
-            logitModel = LogisticRegression(solver="saga", multi_class="multinomial", max_iter=10000, penalty="l2")
+            logitModel = LogisticRegression(solver="lbfgs", multi_class="multinomial", max_iter=10000, penalty="l2")
             logitModel.fit(X_train, y_train.ravel())
 
             # Lasso Features with Proba
@@ -70,7 +70,7 @@ def GDFS(filepath):
             if len(idx) == 0: break
 
             # Calc Acc, Dr
-            cur_acc = get_acc(X[:, idx], y, "cart", True)
+            cur_acc = get_acc(X[:, idx], y, "cart", False)
             cur_dr = 1.0 - 1.0 * len(idx) / n_features
             # print("  * Acc = {0} DR = {1}".format(cur_acc, cur_dr))
 
