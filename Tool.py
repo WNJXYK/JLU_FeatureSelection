@@ -51,18 +51,21 @@ def test(func):
         idx = []
         for i in range(n_features):
             if weight[i] > 0.9: idx.append(i)
-
+        A0 = get_acc(X[:, idx], y, "1nn", False)
         A1 = get_acc(X[:, idx], y, "5nn", False)
         A2 = get_acc(X[:, idx], y, "svm", False)
         A3 = get_acc(X[:, idx], y, "cart", False)
+        B0 = get_acc(X[:, idx], y, "1nn", True)
         B1 = get_acc(X[:, idx], y, "5nn", True)
         B2 = get_acc(X[:, idx], y, "svm", True)
         B3 = get_acc(X[:, idx], y, "cart", True)
 
-
+        print(" * 1nn & 10-fold {0}".format(A0))
         print(" * 5nn & 10-fold {0}".format(A1))
         print(" * SVM & 10-fold {0}".format(A2))
         print(" * Cart & 10-fold {0}".format(A3))
+
+        print(" * 1nn & 70%-30% {0}".format(B0))
         print(" * 5nn & 70%-30% {0}".format(B1))
         print(" * SVM & 70%-30% {0}".format(B2))
         print(" * Cart & 70%-30% {0}".format(B3))

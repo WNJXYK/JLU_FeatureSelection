@@ -52,7 +52,7 @@ def FSFOA(filepath):
     lsc, gsc = int(n_features / 5), int(n_features * 2 / 5)
 
     # Init Forest
-    forest = [Tree(n_features)]
+    forest = [Tree(n_features) for _ in range(area_limit/10)]
     # acc_pool = []
 
     # Run Forest

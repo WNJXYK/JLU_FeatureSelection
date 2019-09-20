@@ -1,5 +1,8 @@
 from Tool import test
 
+from IFSFOA import IFSFOA
+test(IFSFOA)
+
 from FSFOA import FSFOA
 test(FSFOA)
 
