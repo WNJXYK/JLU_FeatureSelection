@@ -17,8 +17,8 @@ class Tree:
         for i in range(self.n_features):
             self.weight[i] = v
 
-    def update(self, X, y):
-        self.acc = get_acc(X[:, self.index()], y, "5nn", True)
+    def update(self, X, y, esti="5nn"):
+        self.acc = get_acc(X[:, self.index()], y, esti, True)
 
     def index(self):
         idx = []
@@ -43,7 +43,7 @@ class Tree:
 
 
 
-def FSFOA(filepath):
+def FSFOA(filepath, esti):
     # Input
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
 
@@ -66,7 +66,7 @@ def FSFOA(filepath):
             if tree.age > 0: continue
             new_trees.append(deepcopy(tree))
             new_trees[-1].reverse(lsc)
-            new_trees[-1].update(X, y)
+            new_trees[-1].update(X, y, esti)
             tree.age = tree.age + 1
         forest += new_trees
 
@@ -95,7 +95,7 @@ def FSFOA(filepath):
             tree = candidate[i]
             tree.age = 0
             tree.reverse(gsc)
-            tree.update(X, y)
+            tree.update(X, y, esti)
             forest.append(tree)
 
         forest.sort(key=lambda x: x.acc, reverse=True)

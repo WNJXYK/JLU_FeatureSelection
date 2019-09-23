@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from tqdm import tqdm
 
-def Lasso(filepath):
+def Lasso(filepath, esti):
     # Input
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
 

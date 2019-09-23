@@ -7,7 +7,7 @@ from tqdm import tqdm
 EPS = 1e-10
 
 
-def IFSFOA(filepath):
+def IFSFOA(filepath, esti):
     # Input
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
 
@@ -41,7 +41,7 @@ def IFSFOA(filepath):
             for i in range(lsc):
                 tn = deepcopy(tt)
                 tn.reverse(lsc)
-                tn.update(X, y)
+                tn.update(X, y, esti)
                 if tn.acc > tt.acc:
                     new_trees.append(tn)
                     tt = tn
@@ -75,7 +75,7 @@ def IFSFOA(filepath):
             tree = candidate[i]
             tree.age = 0
             tree.reverse(gsc)
-            tree.update(X, y)
+            tree.update(X, y, esti)
             forest.append(tree)
 
         forest.sort(key=lambda x: (x.acc, -len(x.index())), reverse=True)

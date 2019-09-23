@@ -28,7 +28,7 @@ def build_tf_graph(n_features, n_classes, weight_init):
 
     return (X_input, y_input, coef, bias, lam, learning), (train, weight, loss)
 
-def GDFS(filepath):
+def GDFS(filepath, esti):
     # Input
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
 
@@ -70,7 +70,7 @@ def GDFS(filepath):
             if len(idx) == 0: break
 
             # Calc Acc, Dr
-            cur_acc = get_acc(X[:, idx], y, "cart", False)
+            cur_acc = get_acc(X[:, idx], y, esti, False)
             cur_dr = 1.0 - 1.0 * len(idx) / n_features
             # print("  * Acc = {0} DR = {1}".format(cur_acc, cur_dr))
 
@@ -83,4 +83,4 @@ def GDFS(filepath):
     print("Best Acc = {0}, DR = {1}".format(best_acc, best_dr))
     return best_weight_val
 
-GDFS("dataset/vehicle.csv")
+# GDFS("dataset/vehicle.csv")

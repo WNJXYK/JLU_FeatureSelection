@@ -46,6 +46,7 @@ def get_acc(X, y, esti='5nn', nofold=True):
 
 def Test(func, fp=None):
     files = ["cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct", "arcene"]
+    estis = ["1nn", '5nn', "svm", "cart"]
     if fp is not None: fp = open(fp, "w+")
 
     for name in files:
@@ -53,47 +54,29 @@ def Test(func, fp=None):
         X, y, (n_samples, n_features, _) = load_data(path)
 
         print("Dataset {0} ({1})".format(name, n_samples))
-        if fp is not None:
-            print("Dataset {0} ({1})".format(name, n_samples), file=fp)
+        if fp is not None: print("Dataset {0} ({1})".format(name, n_samples), file=fp)
 
-        start_time = time.time()
-        weight = func(path)
-        idx = []
-        for i in range(n_features):
-            if weight[i] > 0.9: idx.append(i)
+        for esti in estis:
+            start_time = time.time()
+            # Reduce
+            weight = func(path, esti)
+            idx = []
+            for i in range(n_features):
+                if weight[i] > 0.9: idx.append(i)
 
-        A0 = get_acc(X[:, idx], y, "1nn", False)
-        A1 = get_acc(X[:, idx], y, "5nn", False)
-        A2 = get_acc(X[:, idx], y, "svm", False)
-        A3 = get_acc(X[:, idx], y, "cart", False)
-        B0 = get_acc(X[:, idx], y, "1nn", True)
-        B1 = get_acc(X[:, idx], y, "5nn", True)
-        B2 = get_acc(X[:, idx], y, "svm", True)
-        B3 = get_acc(X[:, idx], y, "cart", True)
+            # Predict
+            A0 = get_acc(X[:, idx], y, esti, False)
+            B0 = get_acc(X[:, idx], y, esti, True)
 
-        print("Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time()-start_time))
+            # Print
 
-        print(" * 1nn & 10-fold {0}".format(A0))
-        print(" * 5nn & 10-fold {0}".format(A1))
-        print(" * SVM & 10-fold {0}".format(A2))
-        print(" * Cart & 10-fold {0}".format(A3))
-
-        print(" * 1nn & 70%-30% {0}".format(B0))
-        print(" * 5nn & 70%-30% {0}".format(B1))
-        print(" * SVM & 70%-30% {0}".format(B2))
-        print(" * Cart & 70%-30% {0}".format(B3))
-
-        if fp is not None:
-            print("Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time()-start_time), file=fp)
-            print(" * 1nn & 10-fold {0}".format(A0), file=fp)
-            print(" * 5nn & 10-fold {0}".format(A1), file=fp)
-            print(" * SVM & 10-fold {0}".format(A2), file=fp)
-            print(" * Cart & 10-fold {0}".format(A3), file=fp)
-
-            print(" * 1nn & 70%-30% {0}".format(B0), file=fp)
-            print(" * 5nn & 70%-30% {0}".format(B1), file=fp)
-            print(" * SVM & 70%-30% {0}".format(B2), file=fp)
-            print(" * Cart & 70%-30% {0}".format(B3), file=fp)
-            fp.flush()
+            print(" * {1} & 10-fold {0}".format(A0, esti))
+            print(" * {1} & 70%-30% {0}".format(B0, esti))
+            print(" * - Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time() - start_time))
+            if fp is not None:
+                print(" * {1} & 10-fold {0}".format(A0, esti), file=fp)
+                print(" * {1} & 70%-30% {0}".format(B0, esti), file=fp)
+                print(" * - Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time() - start_time), file=fp)
+                fp.flush()
 
     if fp is not None: fp.close()
