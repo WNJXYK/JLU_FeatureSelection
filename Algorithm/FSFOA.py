@@ -3,6 +3,8 @@ import numpy as np
 from copy import deepcopy
 from tqdm import tqdm
 
+EPS = 1e-10
+
 class Tree:
     def __init__(self, n_features):
         self.age = 0
@@ -61,6 +63,7 @@ def FSFOA(filepath):
         # Local Seeding
         new_trees = []
         for tree in forest:
+            if tree.age > 0: continue
             new_trees.append(deepcopy(tree))
             new_trees[-1].reverse(lsc)
             new_trees[-1].update(X, y)
@@ -87,7 +90,8 @@ def FSFOA(filepath):
         candidate_len = len(candidate)
         idx = np.array([x for x in range(candidate_len)])
         np.random.shuffle(idx)
-        for i in range(int(candidate_len*transfer_rate)):
+        for ii in range(int(candidate_len*transfer_rate)):
+            i = idx[ii]
             tree = candidate[i]
             tree.age = 0
             tree.reverse(gsc)
@@ -98,9 +102,11 @@ def FSFOA(filepath):
         forest[0].age = 0
 
         # print(forest[0].acc)
-        acc_pool.append(forest[0].acc)
+
         if len(acc_pool) > 10: acc_pool.pop(0)
-        if len(acc_pool) >= 10 and np.mean(acc_pool) >= forest[0].acc: break
+        if len(acc_pool) >= 10 and np.mean(acc_pool)+EPS >= forest[0].acc: break
+        acc_pool.append(forest[0].acc)
+        # print(len(new_forest), candidate_len, np.mean(acc_pool), acc_pool[-1])
 
     print("Acc = {0} DR = {1}".format(forest[0].acc, forest[0].DR()))
     return forest[0].weight

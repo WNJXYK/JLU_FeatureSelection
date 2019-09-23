@@ -21,22 +21,25 @@ def load_data(filepath):
 
 
 def get_acc(X, y, esti='5nn', nofold=True):
-    kf = KFold(n_splits=2 if nofold else 10, random_state=19260817)
+    # Build Model
+    model = KNeighborsClassifier()
+    if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]))
+    if esti == 'svm': model = SVC(kernel="rbf", gamma='auto')
+    if esti == 'cart': model = DecisionTreeClassifier()
+
+    # Calc
     acc = []
-
-    for train_index, test_index in kf.split(X):
-        if nofold:
-            train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.3, random_state=19260817)
-        else:
-            train_X, train_y = X[train_index], y[train_index]
-            test_X, test_y = X[test_index], y[test_index]
-
-        model = KNeighborsClassifier()
-        if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]))
-        if esti == 'svm': model = SVC(kernel="rbf", gamma='auto')
-        if esti == 'cart': model = DecisionTreeClassifier()
+    if nofold:
+        train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.3, random_state=19260817)
         model.fit(train_X, train_y.ravel())
         acc.append(accuracy_score(model.predict(test_X), test_y))
+    else:
+        kf = KFold(n_splits=10, random_state=19260817)
+        for train_index, test_index in kf.split(X):
+            train_X, train_y = X[train_index], y[train_index]
+            test_X, test_y = X[test_index], y[test_index]
+            model.fit(train_X, train_y.ravel())
+            acc.append(accuracy_score(model.predict(test_X), test_y))
 
     return np.mean(acc)
 
@@ -46,12 +49,12 @@ def Test(func, fp=None):
     if fp is not None: fp = open(fp, "w+")
 
     for name in files:
-        print("Dataset {0}".format(name))
-        if fp is not None:
-            print("Dataset {0}".format(name), file=fp)
-
         path = "dataset/" + name + ".csv"
-        X, y, (_, n_features, _) = load_data(path)
+        X, y, (n_samples, n_features, _) = load_data(path)
+
+        print("Dataset {0} ({1})".format(name, n_samples))
+        if fp is not None:
+            print("Dataset {0} ({1})".format(name, n_samples), file=fp)
 
         start_time = time.time()
         weight = func(path)
