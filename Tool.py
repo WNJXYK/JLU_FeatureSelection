@@ -24,7 +24,7 @@ def get_acc(X, y, esti='5nn', nofold=True):
     # Build Model
     model = KNeighborsClassifier(n_jobs=-1)
     if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]), n_jobs=-1)
-    if esti == 'svm': model = SVC(kernel="rbf", gamma='auto', n_jobs=-1)
+    if esti == 'svm': model = SVC(kernel="rbf", gamma='auto')
     if esti == 'cart': model = DecisionTreeClassifier()
 
     # Calc

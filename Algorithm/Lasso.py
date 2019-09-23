@@ -13,7 +13,7 @@ def Lasso(filepath):
     pbar = tqdm(range(100))
     last = 0
     for epoch in pbar:
-        logitModel = LogisticRegression(solver="saga", multi_class="multinomial", max_iter=10000, penalty="l1")
+        logitModel = LogisticRegression(solver="saga", multi_class="multinomial", max_iter=10000, penalty="l1", n_jobs=-1)
         logitModel.fit(X * weight, y.ravel())
 
         # Calc Weight
