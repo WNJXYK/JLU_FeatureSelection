@@ -6,6 +6,7 @@ from sklearn.preprocessing import scale
 from sklearn.metrics import accuracy_score
 import pandas as pd
 import numpy as np
+import time
 
 
 def load_data(filepath):
@@ -17,6 +18,7 @@ def load_data(filepath):
     n_classes = len(set(raw[:, n_features]))
 
     return X, y, (n_samples, n_features, n_classes)
+
 
 def get_acc(X, y, esti='5nn', nofold=True):
     kf = KFold(n_splits=2 if nofold else 10, random_state=19260817)
@@ -38,19 +40,25 @@ def get_acc(X, y, esti='5nn', nofold=True):
 
     return np.mean(acc)
 
-def test(func):
+
+def Test(func, fp=None):
     files = ["cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct", "arcene"]
+    if fp is not None: fp = open(fp, "w+")
 
     for name in files:
         print("Dataset {0}".format(name))
+        if fp is not None:
+            print("Dataset {0}".format(name), file=fp)
 
         path = "dataset/" + name + ".csv"
         X, y, (_, n_features, _) = load_data(path)
 
+        start_time = time.time()
         weight = func(path)
         idx = []
         for i in range(n_features):
             if weight[i] > 0.9: idx.append(i)
+
         A0 = get_acc(X[:, idx], y, "1nn", False)
         A1 = get_acc(X[:, idx], y, "5nn", False)
         A2 = get_acc(X[:, idx], y, "svm", False)
@@ -59,6 +67,8 @@ def test(func):
         B1 = get_acc(X[:, idx], y, "5nn", True)
         B2 = get_acc(X[:, idx], y, "svm", True)
         B3 = get_acc(X[:, idx], y, "cart", True)
+
+        print("Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time()-start_time))
 
         print(" * 1nn & 10-fold {0}".format(A0))
         print(" * 5nn & 10-fold {0}".format(A1))
@@ -69,3 +79,18 @@ def test(func):
         print(" * 5nn & 70%-30% {0}".format(B1))
         print(" * SVM & 70%-30% {0}".format(B2))
         print(" * Cart & 70%-30% {0}".format(B3))
+
+        if fp is not None:
+            print("Time = {1} DR = {0}".format(1. - 1. * len(idx) / len(weight), time.time()-start_time), file=fp)
+            print(" * 1nn & 10-fold {0}".format(A0), file=fp)
+            print(" * 5nn & 10-fold {0}".format(A1), file=fp)
+            print(" * SVM & 10-fold {0}".format(A2), file=fp)
+            print(" * Cart & 10-fold {0}".format(A3), file=fp)
+
+            print(" * 1nn & 70%-30% {0}".format(B0), file=fp)
+            print(" * 5nn & 70%-30% {0}".format(B1), file=fp)
+            print(" * SVM & 70%-30% {0}".format(B2), file=fp)
+            print(" * Cart & 70%-30% {0}".format(B3), file=fp)
+            fp.flush()
+
+    if fp is not None: fp.close()

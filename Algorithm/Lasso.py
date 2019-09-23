@@ -31,7 +31,7 @@ def Lasso(filepath):
         else:
             break
 
-    print("Dr = {0}".format(1.0 * cnt / n_features))
+    # print("Dr = {0}".format(1.0 * cnt / n_features))
     return weight
 
 

@@ -1,5 +1,5 @@
-from FSFOA import Tree
-from Tool import load_data, get_acc
+from Algorithm.FSFOA import Tree
+from Tool import load_data
 import numpy as np
 from copy import deepcopy
 from tqdm import tqdm
