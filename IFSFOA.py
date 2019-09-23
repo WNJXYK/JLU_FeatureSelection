@@ -30,6 +30,7 @@ def IFSFOA(filepath):
 
     # Run Forest
     pbar = tqdm(range(100))
+    acc_pool= []
     for epoch in pbar:
         # Local Seeding
         new_trees = []
@@ -76,9 +77,9 @@ def IFSFOA(filepath):
         forest[0].age = 0
 
         # print(forest[0].acc)
-        # acc_pool.append(forest[0].acc)
-        # if len(acc_pool) > 20: acc_pool.pop(0)
-        # if len(acc_pool) >= 20 and np.max(acc_pool) >= forest[0].acc: break
+        acc_pool.append(forest[0].acc)
+        if len(acc_pool) > 10: acc_pool.pop(0)
+        if len(acc_pool) >= 10 and np.mean(acc_pool) >= forest[0].acc: break
 
     print("Acc = {0} DR = {1}".format(forest[0].acc, forest[0].DR()))
     return forest[0].weight

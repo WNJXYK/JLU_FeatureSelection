@@ -83,4 +83,4 @@ def GDFS(filepath):
     print("Best Acc = {0}, DR = {1}".format(best_acc, best_dr))
     return best_weight_val
 
-# GDFS("dataset/vehicle.csv")
+GDFS("dataset/vehicle.csv")

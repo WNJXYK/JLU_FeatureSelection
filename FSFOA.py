@@ -52,8 +52,8 @@ def FSFOA(filepath):
     lsc, gsc = int(n_features / 5), int(n_features * 2 / 5)
 
     # Init Forest
-    forest = [Tree(n_features) for _ in range(area_limit/10)]
-    # acc_pool = []
+    forest = [Tree(n_features) for _ in range(int(area_limit/10))]
+    acc_pool = []
 
     # Run Forest
     pbar = tqdm(range(100))
@@ -98,9 +98,9 @@ def FSFOA(filepath):
         forest[0].age = 0
 
         # print(forest[0].acc)
-        # acc_pool.append(forest[0].acc)
-        # if len(acc_pool) > 20: acc_pool.pop(0)
-        # if len(acc_pool) >= 20 and np.max(acc_pool) >= forest[0].acc: break
+        acc_pool.append(forest[0].acc)
+        if len(acc_pool) > 10: acc_pool.pop(0)
+        if len(acc_pool) >= 10 and np.mean(acc_pool) >= forest[0].acc: break
 
     print("Acc = {0} DR = {1}".format(forest[0].acc, forest[0].DR()))
     return forest[0].weight

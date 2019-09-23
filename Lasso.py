@@ -11,6 +11,7 @@ def Lasso(filepath):
     # Train
     weight = np.ones(n_features)
     pbar = tqdm(range(100))
+    last = 0
     for epoch in pbar:
         logitModel = LogisticRegression(solver="saga", multi_class="multinomial", max_iter=10000, penalty="l1")
         logitModel.fit(X * weight, y.ravel())
@@ -24,6 +25,11 @@ def Lasso(filepath):
                 weight.append(0)
                 cnt = cnt + 1
         weight = np.array(weight)
+
+        if last != cnt:
+            last = cnt
+        else:
+            break
 
     print("Dr = {0}".format(1.0 * cnt / n_features))
     return weight
