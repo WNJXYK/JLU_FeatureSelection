@@ -6,5 +6,8 @@ from Tool import Test
 # from Algorithm.GDFS import GDFS
 # Test(GDFS, "Logs/GDFS.txt")
 
-from Algorithm.FSFOA import FSFOA
-Test(FSFOA, "Logs/FSFOA.txt")
+# from Algorithm.FSFOA import FSFOA
+# Test(FSFOA, "Logs/FSFOA.txt")
+
+from Algorithm.IFSFOA import IFSFOA
+Test(IFSFOA, "Logs/IFSFOA.txt")
