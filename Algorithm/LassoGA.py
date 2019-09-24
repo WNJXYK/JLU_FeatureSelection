@@ -42,7 +42,7 @@ class Node:
         return ret
 
     def mutation(self, T):
-        lim = int(min(T, self.n_features))
+        lim = int(min(T, self.n_features / 2.))
         for i in range(lim):
             idx = int(np.random.randint(0, self.n_features))
             if np.abs(self.weight[idx]) < EPS:
@@ -72,7 +72,7 @@ def cross_task(x, father):
 def LGA(filepath, esti, epoch_limit=100):
     # Input
     X, y, (n_samples, n_features, n_classes) = load_data(filepath)
-    task_pool = Pool(14)
+    task_pool = Pool(12)
 
     # Init Group
     group = []
@@ -90,7 +90,7 @@ def LGA(filepath, esti, epoch_limit=100):
         group.append(white)
     group = task_pool.map(partial(lasso_task, X=X, y=y, esti=esti), group)
     group.sort(key=lambda x: x.fitness(), reverse=True)
-    print("Inited")
+    # print("Inited")
 
     group_siz = int(len(group) * 1.5)
     fitness_pool = []
@@ -99,10 +99,11 @@ def LGA(filepath, esti, epoch_limit=100):
         cur_group_siz = len(group)
 
         # Mutation
-        mutation_T = max(1., n_features * np.log2(2. * (epoch_limit - epoch) / epoch_limit))
+        mutation_T = max(1., n_features / 2. * np.log2(2. * (epoch_limit - epoch) / epoch_limit))
+        # print(mutation_T)
         mutation_group = task_pool.map(partial(mutation_task, T=mutation_T), group)
         mutation_group = task_pool.map(partial(lasso_task, X=X, y=y, esti=esti), mutation_group)
-        print("Mutated")
+        # print("Mutated")
 
         # Cross
         kf = KFold(5, True)
@@ -113,7 +114,7 @@ def LGA(filepath, esti, epoch_limit=100):
             cross_group += task_pool.map(partial(cross_task, father=group[cur_cross]), cross_obj)
             cur_cross = cur_cross + 1
         cross_group = task_pool.map(partial(lasso_task, X=X, y=y, esti=esti), cross_group)
-        print("Crossed")
+        # print("Crossed")
 
         # Select
         group += mutation_group

@@ -45,7 +45,7 @@ def get_acc(X, y, esti='5nn', nofold=True):
 
 
 def Test(func, fp=None):
-    files = ["arcene", "cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct"]
+    files = ["cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct", "arcene"]
     estis = ["1nn", '5nn', "svm", "cart"]
     if fp is not None: fp = open(fp, "w+")
 
