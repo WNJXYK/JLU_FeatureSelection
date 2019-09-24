@@ -22,8 +22,8 @@ def load_data(filepath):
 
 def get_acc(X, y, esti='5nn', nofold=True):
     # Build Model
-    model = KNeighborsClassifier(n_jobs=-1)
-    if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]), n_jobs=-1)
+    model = KNeighborsClassifier()
+    if esti[1:] == 'nn': model = KNeighborsClassifier(n_neighbors=int(esti[0]))
     if esti == 'svm': model = SVC(kernel="rbf", gamma='auto')
     if esti == 'cart': model = DecisionTreeClassifier()
 
@@ -45,7 +45,7 @@ def get_acc(X, y, esti='5nn', nofold=True):
 
 
 def Test(func, fp=None):
-    files = ["cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct", "arcene"]
+    files = ["arcene", "cleveland", "ionosphere", "heart", "vehicle", "LSVT", "srbct"]
     estis = ["1nn", '5nn', "svm", "cart"]
     if fp is not None: fp = open(fp, "w+")
 
