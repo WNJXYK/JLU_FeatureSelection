@@ -18,7 +18,7 @@ class Tree:
             self.weight[i] = v
 
     def update(self, X, y, esti="5nn"):
-        self.acc = get_acc(X[:, self.index()], y, esti, True)
+        self.acc = get_acc(X[:, self.index()], y, esti, False)
 
     def index(self):
         idx = []
@@ -63,11 +63,12 @@ def FSFOA(filepath, esti):
         # Local Seeding
         new_trees = []
         for tree in forest:
-            if tree.age > 0: continue
-            new_trees.append(deepcopy(tree))
-            new_trees[-1].reverse(lsc)
-            new_trees[-1].update(X, y, esti)
             tree.age = tree.age + 1
+            if tree.age > 1: continue
+            for _ in range(lsc):
+                new_trees.append(deepcopy(tree))
+                new_trees[-1].reverse(1)
+                new_trees[-1].update(X, y, esti)
         forest += new_trees
 
         # Delete Trees

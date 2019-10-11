@@ -36,7 +36,8 @@ def IFSFOA(filepath, esti):
         # Local Seeding
         new_trees = []
         for tree in forest:
-            if tree.age > 0: continue
+            tree.age = tree.age + 1
+            if tree.age > 1: continue
             tt = deepcopy(tree)
             for i in range(lsc):
                 tn = deepcopy(tt)
@@ -45,7 +46,7 @@ def IFSFOA(filepath, esti):
                 if tn.acc > tt.acc:
                     new_trees.append(tn)
                     tt = tn
-            tree.age = tree.age + 1
+
         forest += new_trees
 
         # Delete Trees
